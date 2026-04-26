@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkDrop | Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { margin: 0; background-color: #FFD600; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .container { width: 90%; max-width: 400px; text-align: center; }
+        h1 { font-size: 3.5rem; font-weight: 900; margin-bottom: 30px; letter-spacing: -2px; }
+        .btn { background: #000; color: #fff; padding: 22px; border-radius: 18px; display: block; margin-bottom: 15px; font-weight: bold; cursor: pointer; border: none; width: 100%; font-size: 1.1rem; text-decoration: none; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        #share-screen { display: none; background: #fff; padding: 30px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        #qrcode { display: flex; justify-content: center; margin-bottom: 20px; }
+        input[type="file"] { display: none; }
+        .file-name { font-weight: bold; color: #333; margin-bottom: 20px; word-break: break-all; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>LinkDrop</h1>
+    
+    <div id="main-ui">
+        <label for="f-any" class="btn">📁 DROP ANY FILE</label>
+        <input type="file" id="f-any" onchange="initiateDrop(this)">
+        
+        <label for="f-img" class="btn">🖼️ DROP PHOTOS</label>
+        <input type="file" id="f-img" accept="image/*" onchange="initiateDrop(this)">
+    </div>
+
+    <div id="share-screen">
+        <div id="qrcode"></div>
+        <div class="file-name" id="display-name">File Name</div>
+        <button class="btn" onclick="shareToWhatsApp()">SHARE ON WHATSAPP</button>
+        <p style="cursor:pointer; font-weight:bold; margin-top:10px;" onclick="location.reload()">← BACK</p>
+    </div>
+</div>
+
+<script>
+    let fileName = "";
+    let finalShareLink = "";
+
+    // IMPORTANT: Upload ke baad jo link milega wo yahan dalna
+    const MY_WEBSITE_URL = "ASLI_LINK_YAHAN_DALO"; 
+
+    function initiateDrop(input) {
+        if (input.files && input.files[0]) {
+            fileName = input.files[0].name;
+            
+            // Link Generate
+            finalShareLink = MY_WEBSITE_URL + "?download=" + Math.random().toString(36).substring(7);
+
+            document.getElementById('main-ui').style.display = 'none';
+            document.getElementById('share-screen').style.display = 'block';
+            document.getElementById('display-name').innerText = fileName;
+
+            // QR Code Create
+            document.getElementById("qrcode").innerHTML = "";
+            new QRCode(document.getElementById("qrcode"), {
+                text: finalShareLink,
+                width: 180,
+                height: 180,
+                colorDark : "#000000",
+                colorLight : "#ffffff"
+            });
+        }
+    }
+
+    function shareToWhatsApp() {
+        const text = encodeURIComponent("I'm sharing a file via LinkDrop!\n\nFile: " + fileName + "\nLink: " + finalShareLink);
+        window.open("https://api.whatsapp.com/send?text=" + text, '_blank');
+    }
+</script>
+
+</body>
+</html>
