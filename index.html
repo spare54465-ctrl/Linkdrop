@@ -3,71 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LinkDrop | Pro Share</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>LinkDrop | Downloading...</title>
     <style>
-        body { margin: 0; background-color: #FFD600; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .container { width: 90%; max-width: 400px; text-align: center; }
-        h1 { font-size: 3.5rem; font-weight: 900; margin-bottom: 30px; letter-spacing: -3px; color: #000; }
-        .btn { background: #000; color: #fff; padding: 22px; border-radius: 18px; display: block; margin-bottom: 15px; font-weight: bold; cursor: pointer; border: none; width: 100%; font-size: 1.1rem; text-decoration: none; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .btn:active { transform: scale(0.98); }
-        #share-screen { display: none; background: #fff; padding: 30px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: pop 0.3s ease-out; }
-        #qrcode { display: flex; justify-content: center; margin-bottom: 20px; border: 2px solid #eee; padding: 10px; border-radius: 15px; }
-        .file-info { font-weight: bold; color: #333; margin-bottom: 20px; font-size: 0.9rem; }
-        input[type="file"] { display: none; }
-        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        body { background: #FFD600; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: #000; color: #fff; padding: 40px; border-radius: 30px; text-align: center; width: 85%; max-width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        .loader { border: 5px solid #333; border-top: 5px solid #FFD600; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div id="main-ui">
-        <h1>LinkDrop</h1>
-        <label for="file-any" class="btn">📁 DROP ANY FILE</label>
-        <input type="file" id="file-any" onchange="processDrop(this)">
-        
-        <label for="file-img" class="btn">🖼️ DROP PHOTOS</label>
-        <input type="file" id="file-img" accept="image/*" onchange="processDrop(this)">
+    <div class="card">
+        <div class="loader" id="spinner"></div>
+        <h2 id="status">File Found!</h2>
+        <p id="message">Your download is starting automatically...</p>
     </div>
 
-    <div id="share-screen">
-        <div id="qrcode"></div>
-        <div class="file-info" id="file-name">Ready to Share</div>
-        <button class="btn" onclick="whatsappSend()">SHARE VIA WHATSAPP</button>
-        <p style="cursor:pointer; font-weight:bold; color:#666;" onclick="location.reload()">← START OVER</p>
-    </div>
-</div>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const fileUrl = params.get('d');
 
-<script>
-    let selectedFile = "";
-    // FIXED LINK: As per your screenshot
-    const BASE_URL = "https://spare54465-ctrl.github.io/Linkdrop/";
-
-    function processDrop(input) {
-        if (input.files && input.files[0]) {
-            selectedFile = input.files[0].name;
-            const shareUrl = BASE_URL + "?id=" + Math.random().toString(36).substring(7);
-
-            document.getElementById('main-ui').style.display = 'none';
-            document.getElementById('share-screen').style.display = 'block';
-            document.getElementById('file-name').innerText = "File: " + selectedFile;
-
-            // QR Generation
-            document.getElementById("qrcode").innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), {
-                text: shareUrl,
-                width: 180,
-                height: 180
-            });
+        if (fileUrl) {
+            window.location.replace(fileUrl); 
+            setTimeout(() => {
+                document.getElementById('status').innerText = "Success!";
+                document.getElementById('spinner').style.display = 'none';
+            }, 3000);
+        } else {
+            document.getElementById('status').innerText = "Error";
+            document.getElementById('message').innerText = "No link found.";
+            document.getElementById('spinner').style.display = 'none';
         }
-    }
-
-    function whatsappSend() {
-        const shareUrl = BASE_URL + "?id=" + Math.random().toString(36).substring(7);
-        const text = encodeURIComponent("I'm sharing a file via LinkDrop!\n\nFile: " + selectedFile + "\nLink: " + shareUrl);
-        window.open("https://api.whatsapp.com/send?text=" + text, '_blank');
-    }
-</script>
-
+    </script>
 </body>
 </html>
